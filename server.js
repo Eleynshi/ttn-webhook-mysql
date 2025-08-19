@@ -1,7 +1,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const mysql = require("mysql2");
-const moment = require("moment-timezone");  // ✅ for timezone conversion
 
 const app = express();
 app.use(bodyParser.json());
@@ -32,16 +31,17 @@ app.post("/uplink", (req, res) => {
     return res.status(400).send("Invalid payload");
   }
 
-  // ✅ Fix field names based on your TTN payload formatter
+  // ✅ Match TTN payload field names
   const pm1 = uplink.decoded_payload.PM1_0 || null;
   const pm25 = uplink.decoded_payload.PM2_5 || null;
   const pm10 = uplink.decoded_payload.PM10 || null;
 
-  // ✅ Convert timestamp to Asia/Manila timezone
-  const ttnTimestamp = uplink.received_at || new Date().toISOString();
-  const localTimestamp = moment(ttnTimestamp)
-    .tz("Asia/Manila")
-    .format("YYYY-MM-DD HH:mm:ss");
+  // ✅ Convert UTC -> Asia/Manila (+8h)
+  const ttnTimestamp = uplink.received_at ? new Date(uplink.received_at) : new Date();
+  const localTimestamp = new Date(ttnTimestamp.getTime() + 8 * 60 * 60 * 1000) // add 8 hours
+    .toISOString()
+    .slice(0, 19)
+    .replace("T", " "); // format as "YYYY-MM-DD HH:mm:ss"
 
   // Insert into MySQL
   const sql =
