@@ -23,7 +23,7 @@ db.connect(err => {
 });
 
 // ✅ TTN webhook endpoint
-app.post("/ttn", (req, res) => {
+app.post("/uplink", (req, res) => {
   console.log("📥 Received data:", req.body);
 
   const uplink = req.body.uplink_message;
@@ -53,4 +53,5 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });
+
 
