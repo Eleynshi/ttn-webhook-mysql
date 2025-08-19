@@ -37,7 +37,7 @@ app.post("/uplink", (req, res) => {
   const receivedAt = uplink.received_at || new Date();
 
   // Insert into MySQL
-  const sql = "INSERT INTO pm_readings (pm1_0, pm2_5, pm10, received_at) VALUES (?, ?, ?, ?)";
+  const sql = "INSERT INTO pm_readings (pm1_0, pm2_5, pm10, timestamp) VALUES (?, ?, ?, ?)";
   db.query(sql, [pm1, pm25, pm10, receivedAt], (err, result) => {
     if (err) {
       console.error("❌ Error inserting:", err);
@@ -53,5 +53,6 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });
+
 
 
